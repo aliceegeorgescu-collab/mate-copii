@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createId, createRemoteProfile, getPlayerId, loadRemoteAccount, saveRemoteGameResult, saveRemoteProfileState } from "./persistence";
+import { CharacterArt, PERSONAJE, getPersonajById } from "./CharacterArt";
+import { JocGradinitaVesela, JocLabirintBatman } from "./ExtraGames";
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
@@ -41,13 +43,6 @@ function genOptiuni(raspuns, max = 20) {
   return [...set].sort(() => Math.random() - 0.5);
 }
 
-const PERSONAJE = [
-  { id: "urs", nume: "Ursuleț", emoji: "🐻", culoare: "#8d6e63" },
-  { id: "iepure", nume: "Iepuraș", emoji: "🐰", culoare: "#f48fb1" },
-  { id: "pisica", nume: "Pisicuță", emoji: "🐱", culoare: "#ffb74d" },
-  { id: "vulpe", nume: "Vulpiță", emoji: "🦊", culoare: "#ff7043" },
-];
-
 const DIFICULTATI = {
   usor: { label: "Ușor", ex: 5, timp: 20 },
   mediu: { label: "Mediu", ex: 8, timp: 15 },
@@ -87,12 +82,11 @@ function AnimatedCharacter({ personaj, stare, streak }) {
   if (stare === "corect") cls = "char-dance";
   if (stare === "gresit") cls = "char-sad";
   const isOnFire = streak >= 3;
+  const resolved = getPersonajById(personaj?.id) || PERSONAJE[0];
+
   return (
     <div className={`anim-char ${cls} ${isOnFire ? "on-fire" : ""}`}>
-      <span className="char-emoji">{personaj.emoji}</span>
-      {stare === "gresit" && <span className="char-mood">😢</span>}
-      {stare === "corect" && !isOnFire && <span className="char-mood">🎉</span>}
-      {isOnFire && <span className="char-mood">🔥</span>}
+      <CharacterArt personaj={resolved} stare={stare} streak={streak} />
     </div>
   );
 }
@@ -153,6 +147,11 @@ function formatDateLabel(value) {
   });
 }
 
+function getPersonajSimbol(personaj) {
+  if (!personaj) return "EU";
+  return personaj.simbol || personaj.nume?.slice(0, 2)?.toUpperCase() || "EU";
+}
+
 function formatGameLabel(gameId) {
   const labels = {
     baloane: "Prinde Răspunsul",
@@ -160,6 +159,8 @@ function formatGameLabel(gameId) {
     pescuit: "Pescuitul Numerelor",
     racheta: "Racheta spre Stele",
     cursa: "Cursa Mașinuțelor",
+    labirint_batman: "Labirintul lui Batman",
+    gradinita_vesela: "Gradinita Vesela",
   };
 
   return labels[gameId] ?? gameId;
@@ -227,7 +228,7 @@ function SelectPersonaj({ onSelect }) {
       <div className="personaje-grid">
         {PERSONAJE.map(p => (
           <button key={p.id} className="personaj-btn bounce-on-hover" onClick={() => onSelect(p)} style={{ "--pc": p.culoare }}>
-            <span className="personaj-emoji breathe">{p.emoji}</span>
+            <div className="personaj-figure"><CharacterArt personaj={p} stare="idle" size={132} className="select-character" /></div>
             <span className="personaj-nume">{p.nume}</span>
           </button>
         ))}
@@ -250,22 +251,24 @@ function CameraTrofee({ stele }) {
 }
 function SelectJoc({ personaj, profil, onSelect, onBack, onChangeCharacter, stele, sunetActivat, onToggleSunet }) {
   const jocuri = [
-    { id: "baloane", nume: "Prinde Răspunsul", icon: "🎈", cod: "A", bg: "linear-gradient(135deg,#ff9a9e,#fecfef)" },
-    { id: "trenulet", nume: "Trenulețul Info", icon: "🚂", cod: "B", bg: "linear-gradient(135deg,#a18cd1,#fbc2eb)" },
-    { id: "pescuit", nume: "Pescuitul Numerelor", icon: "🐟", cod: "C", bg: "linear-gradient(135deg,#84fab0,#8fd3f4)" },
-    { id: "racheta", nume: "Racheta spre Stele", icon: "🚀", cod: "D", bg: "linear-gradient(135deg,#fccb90,#d57eeb)" },
-    { id: "cursa", nume: "Cursa Mașinuțelor", icon: "🏎️", cod: "E", bg: "linear-gradient(135deg,#ff0844,#ffb199)" },
+    { id: "baloane", nume: "Prinde Raspunsul", icon: "\uD83C\uDF88", cod: "A", bg: "linear-gradient(135deg,#ff9a9e,#fecfef)" },
+    { id: "trenulet", nume: "Trenuletul Info", icon: "\uD83D\uDE82", cod: "B", bg: "linear-gradient(135deg,#a18cd1,#fbc2eb)" },
+    { id: "pescuit", nume: "Pescuitul Numerelor", icon: "\uD83D\uDC1F", cod: "C", bg: "linear-gradient(135deg,#84fab0,#8fd3f4)" },
+    { id: "racheta", nume: "Racheta spre Stele", icon: "\uD83D\uDE80", cod: "D", bg: "linear-gradient(135deg,#fccb90,#d57eeb)" },
+    { id: "cursa", nume: "Cursa Masinutelor", icon: "\uD83C\uDFCE\uFE0F", cod: "E", bg: "linear-gradient(135deg,#ff0844,#ffb199)" },
+    { id: "labirint_batman", nume: "Labirintul lui Batman", icon: "\uD83E\uDD87", cod: "F", bg: "linear-gradient(135deg,#111827,#1f3b8a)" },
+    { id: "gradinita_vesela", nume: "Gradinita Vesela", icon: "\uD83E\uDDF8", cod: "G", bg: "linear-gradient(135deg,#ffd1dc,#f8bbd0)" },
   ];
 
   return (
     <div className="screen z-front fade-in">
       <CameraTrofee stele={stele} />
       <div className="sound-floating">
-        <button className="btn-back" onClick={onToggleSunet}>{sunetActivat ? "🔊 Sunet ON" : "🔇 Sunet OFF"}</button>
+        <button className="btn-back" onClick={onToggleSunet}>{sunetActivat ? "Sunet ON" : "Sunet OFF"}</button>
       </div>
       <div className="top-bar multi-top-bar">
-        <button className="btn-back" onClick={onBack}>👧 Profiluri</button>
-        <button className="btn-back" onClick={onChangeCharacter}>🐾 Personaj</button>
+        <button className="btn-back" onClick={onBack}>Profiluri</button>
+        <button className="btn-back" onClick={onChangeCharacter}>Personaj</button>
       </div>
       <div className="center-screen menu-layout">
         <AnimatedCharacter personaj={personaj} stare="idle" />
@@ -287,17 +290,39 @@ function SelectJoc({ personaj, profil, onSelect, onBack, onChangeCharacter, stel
     </div>
   );
 }
-function SelectDificultate({ onSelect, onBack }) {
+function SelectDificultate({ jocId, onSelect, onBack }) {
+  const descrieri = {
+    labirint_batman: {
+      usor: "Labirint 5x5 � 90 secunde � mai putini pereti",
+      mediu: "Labirint 7x7 � 60 secunde",
+      greu: "Labirint 9x9 � 45 secunde � multi pereti",
+    },
+    gradinita_vesela: {
+      usor: "4 runde � culori si forme simple",
+      mediu: "6 runde � mai multa varietate",
+      greu: "8 runde � pana la 5 animale si toate formele",
+    },
+  };
+
+  const esteLabirint = jocId === "labirint_batman";
+  const esteGradinita = jocId === "gradinita_vesela";
+
   return (
     <div className="screen center-screen z-front fade-in">
-      <div className="top-bar w-full"><button className="btn-back" onClick={onBack}>← Înapoi</button></div>
+      <div className="top-bar w-full"><button className="btn-back" onClick={onBack}>{"<- Inapoi"}</button></div>
       <h2 className="titlu-mediu wobble">Alege dificultatea</h2>
       <div className="dif-box-grid">
         {Object.entries(DIFICULTATI).map(([k, v]) => (
           <button key={k} className={`dif-card dif-${k} bounce-on-hover`} onClick={() => onSelect(k)}>
             <h3>{v.label}</h3>
-            <p>⏱ {v.timp} sec / exercițiu</p>
-            <p>🎯 {v.ex} exerciții</p>
+            {esteLabirint || esteGradinita ? (
+              <p>{descrieri[jocId]?.[k]}</p>
+            ) : (
+              <>
+                <p>Timp: {v.timp} sec / exercitiu</p>
+                <p>Exercitii: {v.ex}</p>
+              </>
+            )}
           </button>
         ))}
       </div>
@@ -625,7 +650,7 @@ function JocCursa({ personaj, dificultate, onBack, peGata }) {
            
            <div style={{height:'60px', borderBottom:'2px dashed #999', position:'relative', marginBottom:'10px'}}>
              <div style={{position:'absolute', left:`${playerP}%`, top:0, fontSize:'3.5rem', transition:'left 0.5s', zIndex:5}}>
-               🏎️<span style={{fontSize:'1.2rem', position:'absolute', top:'-20px', left:'10px', background:'white', borderRadius:'10px', padding:'2px 8px'}}>{personaj.emoji}</span>
+               🏎️<span style={{fontSize:'1.2rem', position:'absolute', top:'-20px', left:'10px', background:'white', borderRadius:'10px', padding:'2px 8px'}}>{getPersonajSimbol(personaj)}</span>
              </div>
            </div>
            
@@ -645,7 +670,7 @@ function JocCursa({ personaj, dificultate, onBack, peGata }) {
 
 window.sunetActivat = true;
 
-export default function App() {
+export default function LegacyGameApp({ user, onLogout }) {
   const [playerId] = useState(() => getPlayerId());
   const [syncReady, setSyncReady] = useState(false);
   const remoteSaveTimeoutRef = useRef(null);
@@ -663,13 +688,14 @@ export default function App() {
   const profilActiv = profiles.find((profile) => profile.id === selectedProfileId) ?? null;
 
   function incarcaProfil(profile) {
+    const chosenPersonaj = getPersonajById(profile?.personaj?.id) ?? null;
     setSelectedProfileId(profile?.id ?? null);
-    setPersonaj(profile?.personaj ?? null);
+    setPersonaj(chosenPersonaj);
     setSteleGlobale(profile?.steleGlobale ?? 0);
     setSunetActivat(profile?.sunetActivat ?? true);
     setJocSelectat(null);
     setDificultate(null);
-    setFaza(profile ? (profile.personaj ? "meniu" : "personaj") : "profil");
+    setFaza(profile ? (chosenPersonaj ? "meniu" : "personaj") : "profil");
   }
 
   useEffect(() => {
@@ -836,6 +862,10 @@ export default function App() {
         button { font-family: var(--main-font); outline: none; border: none; cursor: pointer; }
         .btn-back { padding: 0.6rem 1.2rem; border-radius: 99px; background: white; border: 3px solid #ddd; font-size: 1.1rem; color: #777; transition: all 0.2s; box-shadow: 0 4px 0 #ccc; margin: 1rem; }
         .btn-back:hover { border-color: #ff7043; color: #ff7043; transform: translateY(2px); box-shadow: 0 2px 0 #ccc; }
+        .account-floating { position: fixed; top: 1rem; left: 1rem; z-index: 220; display: flex; align-items: center; gap: 0.75rem; background: rgba(255,255,255,0.96); border: 4px solid #ffd54f; border-radius: 20px; padding: 0.6rem 0.9rem; box-shadow: 0 8px 0 #ffb300; }
+        .account-name { font-family: var(--main-font); color: #6d4c41; font-size: 1rem; }
+        .btn-logout { padding: 0.55rem 1rem; border-radius: 99px; background: #ef5350; color: white; border: 3px solid #fff; font-size: 1rem; box-shadow: 0 4px 0 #c62828; }
+        .btn-logout:hover { transform: translateY(2px); box-shadow: 0 2px 0 #c62828; }
         .btn-maine { padding: 1.2rem 2.5rem; font-size: 1.6rem; border-radius: 99px; background: #ff7043; color: white; border: 4px solid #fff; box-shadow: 0 8px 0 #d84315; }
         .btn-maine:hover { transform: translateY(4px); box-shadow: 0 4px 0 #d84315; }
         
@@ -859,13 +889,13 @@ export default function App() {
         .istoric-list { display: flex; flex-direction: column; gap: 0.6rem; }
         .istoric-item { display: grid; grid-template-columns: 1.4fr 1fr 0.7fr 1.3fr; gap: 0.5rem; align-items: center; background: #fff8e1; border-radius: 14px; padding: 0.7rem 0.9rem; font-family: var(--sec-font); font-weight: 700; }
         .istoric-empty { font-family: var(--sec-font); color: #6d4c41; }
-        .personaje-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
-        .personaj-btn { background: white; border: 5px solid var(--pc); border-radius: 30px; padding: 1.5rem; box-shadow: 0 8px 0 var(--pc); display: flex; flex-direction: column; align-items: center; }
+                .personaje-grid { display: grid; grid-template-columns: repeat(4, minmax(180px, 1fr)); gap: 1.25rem; margin-top: 2rem; width: min(94vw, 1120px); }
+        .personaj-btn { background: white; border: 5px solid var(--pc); border-radius: 30px; padding: 1.15rem 1rem; box-shadow: 0 8px 0 var(--pc); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 235px; }
         .personaj-btn:active { transform: translateY(6px); box-shadow: 0 2px 0 var(--pc); }
-        .personaj-emoji { font-size: 4rem; }
-        .personaj-nume { font-size: 1.5rem; margin-top: 0.5rem; color: #333; }
+        .personaj-figure { width: 132px; height: 132px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem; }
+        .personaj-nume { font-size: 1.2rem; margin-top: 0.4rem; color: #333; text-align: center; line-height: 1.2; }
         
-        .jocuri-main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 500px; margin: 2rem auto; }
+        .jocuri-main-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1.2rem; width: min(94vw, 860px); margin: 2rem auto; }
         .card-joc { display: flex; flex-direction: column; align-items: center; padding: 1.5rem 1rem; border-radius: 20px; color: white; border: 4px solid rgba(255,255,255,0.5); box-shadow: 0 8px 0 rgba(0,0,0,0.1); }
         .card-icon { font-size: 3.5rem; margin-bottom: 0.5rem; }
         .card-titlu { font-size: 1.3rem; line-height: 1.2; text-shadow: 1px 1px 0 rgba(0,0,0,0.2); }
@@ -888,15 +918,56 @@ export default function App() {
         .fir-iarba { width: 10px; height: 30px; background: #68b32e; border-radius: 10px; transform-origin: bottom; animation: waveGrass 3s ease-in-out infinite alternate; }
         .fluture { position: absolute; font-size: 2rem; bottom: 20%; animation: flyButterfly 20s linear infinite; }
         
-        /* CHARACTER ANIMATIONS */
-        .anim-char { position: relative; display: inline-block; }
-        .char-emoji { font-size: 5rem; display: block; }
-        .char-mood { position: absolute; top: -10px; right: -10px; font-size: 2rem; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        
-        .char-idle .char-emoji { animation: breathe 3s ease-in-out infinite; transform-origin: bottom; }
-        .char-dance .char-emoji { animation: dance 0.6s ease-in-out infinite alternate; transform-origin: bottom; }
-        .char-sad .char-emoji { animation: sadHead 1s ease-in-out infinite; transform-origin: bottom; filter: grayscale(50%); }
-        .anim-char.on-fire .char-emoji { filter: drop-shadow(0 0 15px #ff9800) drop-shadow(0 0 30px #ffeb3b); animation: vibrate 0.1s infinite; }
+                /* CHARACTER ANIMATIONS */
+        .anim-char { position: relative; display: inline-flex; align-items: flex-end; justify-content: center; min-width: 120px; min-height: 120px; }
+        .char-art { position: relative; display: inline-flex; align-items: center; justify-content: center; transform-origin: center bottom; transition: transform 0.35s ease, filter 0.35s ease; }
+        .char-svg { width: 100%; height: 100%; overflow: visible; }
+        .char-art.is-streak,
+        .anim-char.on-fire .char-art { filter: drop-shadow(0 0 14px rgba(255, 193, 7, 0.95)) drop-shadow(0 0 28px rgba(255, 152, 0, 0.45)); }
+        .char-art .fx-batarang,
+        .char-art .fx-heart,
+        .char-art .fx-sparkle,
+        .char-art .fx-bubble,
+        .char-art .fx-lightning,
+        .char-art .fx-tear { opacity: 0; }
+        .char-art.batman.state-idle .cape { animation: capeWave 2.4s ease-in-out infinite; transform-origin: 80px 76px; }
+        .char-art.batman.state-corect .hero { animation: heroLeap 1s ease; }
+        .char-art.batman.state-corect .fx-batarang { opacity: 1; animation: batarangFly 1s ease forwards; }
+        .char-art.batman.state-gresit .brow-left { animation: browFrownLeft 0.8s ease forwards; }
+        .char-art.batman.state-gresit .brow-right { animation: browFrownRight 0.8s ease forwards; }
+        .char-art.sarpe.state-idle .snake-body,
+        .char-art.sarpe.state-idle .snake-belly { animation: snakeWave 2.5s ease-in-out infinite; transform-origin: 82px 104px; }
+        .char-art.sarpe.state-corect .hero { animation: snakeRise 1s ease; }
+        .char-art.sarpe.state-corect .fx-heart { opacity: 1; animation: heartFloat 1s ease forwards; }
+        .char-art.sarpe.state-gresit .hero { animation: snakeCurl 0.8s ease forwards; transform-origin: 80px 118px; }
+        .char-art.liliac.state-idle .wing-left { animation: wingLeft 2s ease-in-out infinite; transform-origin: 78px 88px; }
+        .char-art.liliac.state-idle .wing-right { animation: wingRight 2s ease-in-out infinite; transform-origin: 82px 88px; }
+        .char-art.liliac.state-corect .hero { animation: batLoop 1s ease; transform-origin: 80px 88px; }
+        .char-art.liliac.state-corect .fx-sparkle { opacity: 1; animation: sparkleOrbit 1s ease forwards; }
+        .char-art.liliac.state-gresit .hero { animation: batHang 0.8s ease forwards; transform-origin: 80px 92px; }
+        .char-art.ponei.state-idle .mane,
+        .char-art.ponei.state-idle .tail { animation: maneWave 2.4s ease-in-out infinite; transform-origin: 76px 82px; }
+        .char-art.ponei.state-corect .hero { animation: ponyGallop 1s ease; }
+        .char-art.ponei.state-corect .fx-sparkle { opacity: 1; animation: sparkleTrail 1s ease forwards; }
+        .char-art.ponei.state-gresit .front-hoof { animation: hoofTap 0.8s ease; }
+        .char-art.ponei.state-gresit .hero { animation: ponySad 0.8s ease; }
+        .char-art.spongebob.state-idle .sponge-body { animation: spongeBobIdle 1.8s ease-in-out infinite; transform-origin: center bottom; }
+        .char-art.spongebob.state-corect .hero { animation: spongeLaugh 1s ease; }
+        .char-art.spongebob.state-corect .fx-bubble { opacity: 1; animation: bubbleRise 1s ease forwards; }
+        .char-art.spongebob.state-gresit .hero { animation: spongeCry 0.8s ease; }
+        .char-art.spongebob.state-gresit .fx-tear { opacity: 1; animation: tearFall 0.8s ease forwards; }
+        .char-art.pikachu.state-idle .cheek { animation: cheekGlow 1.5s ease-in-out infinite; }
+        .char-art.pikachu.state-corect .hero { animation: pikachuHop 1s ease; }
+        .char-art.pikachu.state-corect .fx-lightning { opacity: 1; animation: lightningStrike 1s ease forwards; }
+        .char-art.pikachu.state-gresit .ear-left { animation: earDropLeft 0.8s ease forwards; transform-origin: 63px 42px; }
+        .char-art.pikachu.state-gresit .ear-right { animation: earDropRight 0.8s ease forwards; transform-origin: 97px 42px; }
+        .char-art.minion.state-idle .pupil-group { animation: minionEyes 2.6s ease-in-out infinite; }
+        .char-art.minion.state-corect .hero { animation: minionJump 1s ease; }
+        .char-art.minion.state-gresit .hero { animation: minionFall 0.8s ease forwards; transform-origin: 80px 120px; }
+        .char-art.dory.state-idle .fish-body { animation: dorySwim 2.8s ease-in-out infinite; transform-origin: 80px 82px; }
+        .char-art.dory.state-corect .hero { animation: doryJump 1s ease; transform-origin: 80px 82px; }
+        .char-art.dory.state-corect .fx-bubble { opacity: 1; animation: bubbleRise 1s ease forwards; }
+        .char-art.dory.state-gresit .hero { animation: dorySpin 0.8s ease; transform-origin: 80px 82px; }
 
         /* FEEDBACK / GLOBAL EFFECTS */
         .shake-scr { animation: shakeScreen 0.4s ease-in-out; }
@@ -959,6 +1030,41 @@ export default function App() {
         .stea-rez.stins { animation: popIn 0.5s forwards; filter: grayscale(100%) opacity(0.3); }
 
         /* KEYFRAMES */
+        @keyframes capeWave { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(7deg); } }
+        @keyframes heroLeap { 0% { transform: translateY(0) scale(1); } 35% { transform: translateY(-18px) scale(1.04); } 70% { transform: translateY(0) scale(1.02); } 100% { transform: translateY(0) scale(1); } }
+        @keyframes batarangFly { 0% { transform: translate(-6px, 10px) rotate(0deg); } 100% { transform: translate(30px, -18px) rotate(260deg); } }
+        @keyframes browFrownLeft { 0% { transform: rotate(0deg) translateY(0); } 100% { transform: rotate(16deg) translateY(2px); } }
+        @keyframes browFrownRight { 0% { transform: rotate(0deg) translateY(0); } 100% { transform: rotate(-16deg) translateY(2px); } }
+        @keyframes snakeWave { 0%, 100% { transform: translateY(0) scaleY(1); } 50% { transform: translateY(-7px) scaleY(1.04); } }
+        @keyframes snakeRise { 0% { transform: translateY(0) scale(1); } 50% { transform: translateY(-14px) scale(1.05); } 100% { transform: translateY(0) scale(1); } }
+        @keyframes heartFloat { 0% { opacity: 0; transform: translateY(12px) scale(0.4); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateY(-14px) scale(1.1); } }
+        @keyframes snakeCurl { 0% { transform: scale(1); } 100% { transform: scale(0.82) translateY(12px); } }
+        @keyframes wingLeft { 0%, 100% { transform: rotate(7deg); } 50% { transform: rotate(20deg); } }
+        @keyframes wingRight { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(-20deg); } }
+        @keyframes batLoop { 0% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(10px, -16px) rotate(12deg); } 50% { transform: translate(-6px, -22px) rotate(-8deg); } 100% { transform: translate(0, 0) rotate(0deg); } }
+        @keyframes sparkleOrbit { 0% { opacity: 0; transform: rotate(0deg) scale(0.5); } 35% { opacity: 1; } 100% { opacity: 0; transform: rotate(180deg) scale(1.15); } }
+        @keyframes batHang { 0% { transform: rotate(0deg) translateY(0); } 100% { transform: rotate(180deg) translateY(-12px); } }
+        @keyframes maneWave { 0%, 100% { transform: rotate(-3deg) translateY(0); } 50% { transform: rotate(5deg) translateY(-3px); } }
+        @keyframes ponyGallop { 0% { transform: translateX(0) translateY(0); } 30% { transform: translateX(14px) translateY(-10px); } 60% { transform: translateX(-6px) translateY(-4px); } 100% { transform: translateX(0) translateY(0); } }
+        @keyframes sparkleTrail { 0% { opacity: 0; transform: translateX(-10px) scale(0.4); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateX(16px) scale(1.15); } }
+        @keyframes hoofTap { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+        @keyframes ponySad { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(7px) rotate(-3deg); } }
+        @keyframes spongeBobIdle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes spongeLaugh { 0% { transform: scale(1); } 25% { transform: scale(1.08) translateY(-10px); } 100% { transform: scale(1); } }
+        @keyframes bubbleRise { 0% { opacity: 0; transform: translateY(10px) scale(0.7); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateY(-18px) scale(1.18); } }
+        @keyframes spongeCry { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(10px) scaleY(0.98); } }
+        @keyframes tearFall { 0% { opacity: 0; transform: translateY(-4px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(18px); } }
+        @keyframes cheekGlow { 0%, 100% { filter: drop-shadow(0 0 0 rgba(255, 235, 59, 0)); } 50% { filter: drop-shadow(0 0 10px rgba(255, 235, 59, 0.95)); } }
+        @keyframes pikachuHop { 0% { transform: translateY(0); } 30% { transform: translateY(-15px) scale(1.05); } 100% { transform: translateY(0); } }
+        @keyframes lightningStrike { 0% { opacity: 0; } 20% { opacity: 1; } 45% { opacity: 0.25; } 70% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes earDropLeft { 0% { transform: rotate(0deg); } 100% { transform: rotate(-20deg) translate(-2px, 6px); } }
+        @keyframes earDropRight { 0% { transform: rotate(0deg); } 100% { transform: rotate(20deg) translate(2px, 6px); } }
+        @keyframes minionEyes { 0%, 100% { transform: translateX(0); } 35% { transform: translateX(-4px); } 70% { transform: translateX(4px); } }
+        @keyframes minionJump { 0% { transform: translateY(0); } 30% { transform: translateY(-18px) scale(1.04); } 100% { transform: translateY(0); } }
+        @keyframes minionFall { 0% { transform: rotate(0deg); } 100% { transform: rotate(92deg) translateY(10px); } }
+        @keyframes dorySwim { 0%, 100% { transform: translateX(-6px); } 50% { transform: translateX(8px); } }
+        @keyframes doryJump { 0% { transform: translateY(0) rotate(0deg); } 45% { transform: translateY(-18px) rotate(-7deg); } 100% { transform: translateY(0) rotate(0deg); } }
+        @keyframes dorySpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes slideLeft { 0% { transform: translateX(100vw); } 100% { transform: translateX(-150vw); } }
         @keyframes floatY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
@@ -998,21 +1104,37 @@ export default function App() {
         
       `}</style>
       
+      <div className="account-floating">
+        <span className="account-name">Cont: {user?.numeComplet || user?.username || "Utilizator"}</span>
+        {onLogout ? <button className="btn-logout" onClick={onLogout}>Logout</button> : null}
+      </div>
+
       {!jocSelectat && <BackgroundEnvironment />}
       
       {faza === "profil" && <SelectProfil profiles={profiles} onSelect={onSelectProfil} onCreate={onCreateProfil} />}
       {faza === "personaj" && <SelectPersonaj onSelect={onSelectPersonaj} />}
       {faza === "meniu" && <SelectJoc personaj={personaj} profil={profilActiv} onSelect={onSelectJoc} onBack={backLaProfil} onChangeCharacter={backLaPersonaj} stele={steleGlobale} sunetActivat={sunetActivat} onToggleSunet={toggleSunet} />}
-      {faza === "dificultate" && <SelectDificultate onSelect={onSelectDificultate} onBack={backLaMeniu} />}
+      {faza === "dificultate" && <SelectDificultate jocId={jocSelectat} onSelect={onSelectDificultate} onBack={backLaMeniu} />}
       
       {faza === "joc" && jocSelectat === "baloane" && <JocBaloane personaj={personaj} dificultate={dificultate} onBack={backLaMeniu} peGata={backLaMeniu} />}
       {faza === "joc" && jocSelectat === "trenulet" && <JocTrenulet personaj={personaj} dificultate={dificultate} onBack={backLaMeniu} peGata={backLaMeniu} />}
       {faza === "joc" && jocSelectat === "pescuit" && <JocPescuit personaj={personaj} dificultate={dificultate} onBack={backLaMeniu} peGata={backLaMeniu} />}
       {faza === "joc" && jocSelectat === "racheta" && <JocRacheta personaj={personaj} dificultate={dificultate} onBack={backLaMeniu} peGata={backLaMeniu} />}
       {faza === "joc" && jocSelectat === "cursa" && <JocCursa personaj={personaj} dificultate={dificultate} onBack={backLaMeniu} peGata={backLaMeniu} />}
+      {faza === "joc" && jocSelectat === "labirint_batman" && <JocLabirintBatman dificultate={dificultate} onBack={backLaMeniu} peGata={backLaMeniu} />}
+      {faza === "joc" && jocSelectat === "gradinita_vesela" && <JocGradinitaVesela dificultate={dificultate} onBack={backLaMeniu} peGata={backLaMeniu} />}
     </>
   );
 }
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: mate-copii-web
+    runtime: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mate-copii-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PGSSL
+        value: "false"
+
+databases:
+  - name: mate-copii-db
+    plan: free
+    region: frankfurt
+    postgresMajorVersion: "17"

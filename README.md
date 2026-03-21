@@ -1,70 +1,179 @@
-# Getting Started with Create React App
+# Mate Copii Web
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Aplicatie web completa pentru copii, cu autentificare, profil, jocuri de matematica, scoruri, clasament si salvare in PostgreSQL.
 
-## Available Scripts
+## Structura proiectului
 
-In the project directory, you can run:
+```text
+/backend
+  server.js
+  db.js
+  routes/auth.js
+  routes/scoruri.js
+  middleware/auth.js
+/frontend
+  public/
+  src/
+    App.js
+    api.js
+    App.css
+    index.css
+```
 
-### `npm start`
+## Tehnologii folosite
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Frontend: React
+- Backend: Node.js + Express
+- Baza de date: PostgreSQL
+- Autentificare: JWT (cookie + token JSON)
+- Criptare parole: bcrypt
+- Hosting recomandat: Render.com
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Functionalitati incluse
 
-### `npm test`
+- Login si register
+- Parole criptate cu bcrypt
+- JWT cu expirare la 7 zile
+- Logout
+- Rute protejate pentru utilizatori logati
+- Salvare scoruri in PostgreSQL
+- Profil cu:
+  - avatar derivat din initiale
+  - total stele
+  - cel mai bun scor pe joc
+  - progres pe ultimele 7 zile
+  - medalii
+- Clasament global Top 10
+- Evidentierea utilizatorului curent in clasament
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Tabele PostgreSQL
 
-### `npm run build`
+### useri
+- id
+- username (unic)
+- nume_complet
+- parola_criptata
+- data_inregistrare
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### scoruri
+- id
+- user_id
+- joc
+- scor
+- scor_maxim
+- dificultate
+- data_joc
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Rulare locala
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 1. Instaleaza dependentele
 
-### `npm run eject`
+Din radacina proiectului:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+npm install
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 2. Configureaza mediul
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Copiaza `.env.example` in `.env` si completeaza valorile reale:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```env
+DATABASE_URL=postgresql://postgres:parola@localhost:5432/mate_copii
+JWT_SECRET=o_cheie_lunga_si_sigura
+PORT=4000
+PGSSL=false
+REACT_APP_API_BASE_URL=
+```
 
-## Learn More
+### 3. Porneste backend-ul
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm run dev:backend
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Backend-ul ruleaza pe `http://localhost:4000`.
 
-### Code Splitting
+### 4. Porneste frontend-ul
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Intr-un terminal separat:
 
-### Analyzing the Bundle Size
+```bash
+npm run dev:frontend
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Frontend-ul ruleaza pe `http://localhost:3000`.
 
-### Making a Progressive Web App
+## Endpoint-uri API
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Auth
+- `POST /api/register`
+- `POST /api/login`
+- `POST /api/logout`
+- `GET /api/profil`
 
-### Advanced Configuration
+### Scoruri
+- `POST /api/scor`
+- `GET /api/scoruri`
+- `GET /api/top`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Health
+- `GET /api/health`
 
-### Deployment
+## Deploy gratuit pe Render.com
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Proiectul include deja [`render.yaml`](./render.yaml) pentru un deploy simplu.
 
-### `npm run build` fails to minify
+### Ce creeaza Render
+- un `Web Service` Node.js
+- o baza `PostgreSQL`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Pasi exacti
+
+1. Pune proiectul pe GitHub.
+2. Intra pe https://render.com si creeaza un cont.
+3. Apasa `New +` -> `Blueprint`.
+4. Conecteaza repository-ul GitHub.
+5. Render va detecta automat fisierul [`render.yaml`](./render.yaml).
+6. Confirma resursele propuse:
+   - `mate-copii-web`
+   - `mate-copii-db`
+7. Apasa `Apply` sau `Create`.
+8. Asteapta finalizarea build-ului.
+9. Deschide URL-ul public generat de Render.
+
+### Variabile de mediu folosite in Render
+
+Sunt configurate in [`render.yaml`](./render.yaml):
+- `NODE_ENV=production`
+- `DATABASE_URL` din baza Render
+- `JWT_SECRET` generat automat
+- `PGSSL=false`
+
+### Comenzi Render
+- Build: `npm install && npm run build`
+- Start: `npm start`
+- Health check: `/api/health`
+
+## Cum functioneaza in productie
+
+- Render ruleaza backend-ul Express din `/backend`
+- backend-ul serveste automat build-ul React din `/frontend/build`
+- frontend-ul si API-ul sunt pe acelasi domeniu public
+- autentificarea functioneaza cu cookie de sesiune + JWT cu expirare 7 zile
+
+## Verificare dupa deploy
+
+1. Deschide URL-ul aplicatiei.
+2. Creeaza un cont nou.
+3. Fa login.
+4. Joaca un joc si finalizeaza-l.
+5. Verifica profilul, scorurile si clasamentul.
+6. Da refresh si confirma ca sesiunea este pastrata.
+
+## Note despre planul gratuit Render
+
+Conform documentatiei oficiale Render, baza PostgreSQL gratuita exista, dar are limite si poate expira dupa o perioada de inactivitate/termenul planului gratuit. Verifica mereu pagina actuala de docs si pricing inainte de deploy:
+- https://render.com/docs/infrastructure-as-code
+- https://render.com/docs/databases
+- https://render.com/docs/postgresql-credentials
