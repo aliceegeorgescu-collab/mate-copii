@@ -7,6 +7,32 @@ const router = express.Router();
 
 const ALLOWED_GAMES = new Set(["baloane", "trenulet", "pescuit", "racheta", "cursa", "labirint_batman", "gradinita_vesela"]);
 const ALLOWED_DIFFICULTIES = new Set(["usor", "mediu", "greu"]);
+const ALLOWED_SPEEDS = new Set(["incet", "normal", "rapid"]);
+
+function normalizeGamePreferences(value) {
+  const source = value && typeof value === "object" ? value : {};
+  const rawSpeedByGame = source.speedByGame && typeof source.speedByGame === "object" ? source.speedByGame : {};
+  const rawHintSeenByGame = source.hintSeenByGame && typeof source.hintSeenByGame === "object" ? source.hintSeenByGame : {};
+
+  const speedByGame = {};
+  for (const [gameId, speedId] of Object.entries(rawSpeedByGame)) {
+    if (ALLOWED_GAMES.has(gameId) && ALLOWED_SPEEDS.has(speedId)) {
+      speedByGame[gameId] = speedId;
+    }
+  }
+
+  const hintSeenByGame = {};
+  for (const [gameId, seen] of Object.entries(rawHintSeenByGame)) {
+    if (ALLOWED_GAMES.has(gameId) && seen === true) {
+      hintSeenByGame[gameId] = true;
+    }
+  }
+
+  return {
+    speedByGame,
+    hintSeenByGame,
+  };
+}
 
 function normalizeProfile(row, history = []) {
   return {
@@ -15,6 +41,7 @@ function normalizeProfile(row, history = []) {
     personaj: row.personaj,
     steleGlobale: row.stele_globale,
     sunetActivat: row.sunet_activat,
+    gamePreferences: normalizeGamePreferences(row.game_preferences),
     lastSessionAt: row.last_session_at,
     history,
   };
@@ -24,7 +51,7 @@ async function loadProfiles(userId) {
   const [profilesResult, historyResult] = await Promise.all([
     pool.query(
       `
-        SELECT id, name, personaj, stele_globale, sunet_activat, last_session_at, created_at
+        SELECT id, name, personaj, stele_globale, sunet_activat, game_preferences, last_session_at, created_at
         FROM profiluri_copii
         WHERE user_id = $1
         ORDER BY created_at ASC
@@ -77,6 +104,7 @@ router.post("/account/:playerId/profiles", authRequired, async (req, res) => {
   const personaj = req.body?.personaj ?? null;
   const steleGlobale = Number.isInteger(req.body?.steleGlobale) ? req.body.steleGlobale : 0;
   const sunetActivat = req.body?.sunetActivat !== false;
+  const gamePreferences = normalizeGamePreferences(req.body?.gamePreferences);
   const lastSessionAt = req.body?.lastSessionAt ? new Date(req.body.lastSessionAt) : null;
 
   if (!id) {
@@ -95,11 +123,20 @@ router.post("/account/:playerId/profiles", authRequired, async (req, res) => {
   try {
     const result = await pool.query(
       `
-        INSERT INTO profiluri_copii (id, user_id, name, personaj, stele_globale, sunet_activat, last_session_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-        RETURNING id, name, personaj, stele_globale, sunet_activat, last_session_at
+        INSERT INTO profiluri_copii (id, user_id, name, personaj, stele_globale, sunet_activat, game_preferences, last_session_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING id, name, personaj, stele_globale, sunet_activat, game_preferences, last_session_at
       `,
-      [id, req.user.id, name, personaj, steleGlobale, sunetActivat, lastSessionAt ? lastSessionAt.toISOString() : null]
+      [
+        id,
+        req.user.id,
+        name,
+        personaj,
+        steleGlobale,
+        sunetActivat,
+        JSON.stringify(gamePreferences),
+        lastSessionAt ? lastSessionAt.toISOString() : null,
+      ]
     );
 
     return res.status(201).json(normalizeProfile(result.rows[0], []));
@@ -117,6 +154,7 @@ router.put("/account/:playerId/profiles/:profileId/state", authRequired, async (
   const personaj = req.body?.personaj ?? null;
   const steleGlobale = Number(req.body?.steleGlobale);
   const sunetActivat = req.body?.sunetActivat !== false;
+  const gamePreferences = normalizeGamePreferences(req.body?.gamePreferences);
   const lastSessionAt = req.body?.lastSessionAt ? new Date(req.body.lastSessionAt) : null;
 
   if (!profileId) {
@@ -140,11 +178,21 @@ router.put("/account/:playerId/profiles/:profileId/state", authRequired, async (
             personaj = $4,
             stele_globale = $5,
             sunet_activat = $6,
-            last_session_at = $7
+            game_preferences = $7,
+            last_session_at = $8
         WHERE id = $1 AND user_id = $2
-        RETURNING id, name, personaj, stele_globale, sunet_activat, last_session_at
+        RETURNING id, name, personaj, stele_globale, sunet_activat, game_preferences, last_session_at
       `,
-      [profileId, req.user.id, name, personaj, steleGlobale, sunetActivat, lastSessionAt ? lastSessionAt.toISOString() : null]
+      [
+        profileId,
+        req.user.id,
+        name,
+        personaj,
+        steleGlobale,
+        sunetActivat,
+        JSON.stringify(gamePreferences),
+        lastSessionAt ? lastSessionAt.toISOString() : null,
+      ]
     );
 
     if (result.rowCount === 0) {
@@ -250,5 +298,3 @@ router.post("/account/:playerId/profiles/:profileId/results", authRequired, asyn
 });
 
 module.exports = router;
-
-

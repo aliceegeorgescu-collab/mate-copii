@@ -1,0 +1,29 @@
+:root {
+  color-scheme: light;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  --culoare-primara: #ff8f5a;
+  --culoare-secundara: #2563eb;
+  --culoare-accent: #fb7185;
+  --culoare-fundal: #f7efe2;
+  --culoare-card: rgba(255, 255, 255, 0.92);
+  --culoare-text: #1f2a37;
+  --culoare-text-puternic: #0f172a;
+  --culoare-text-soft: rgba(15, 23, 42, 0.72);
+  --culoare-bordura: rgba(15, 23, 42, 0.08);
+  --culoare-eroare: #b91c1c;
+  --culoare-eroare-fundal: #fee2e2;
+  --culoare-success: #166534;
+  --culoare-success-fundal: #dcfce7;
+  --culoare-info: #0c4a6e;
+  --culoare-info-fundal: #e0f2fe;
+  --spatiu-1: 8px;
+  --spatiu-2: 16px;
+  --spatiu-3: 24px;
+  --spatiu-4: 32px;
+  --spatiu-5: 40px;
+  --raza-mica: 16px;
+  --raza-medie: 24px;
+  --raza-mare: 32px;
+  --umbra-card: 0 12px 28px rgba(15, 23, 42, 0.08);
+  --umbra-elevata: 0 20px 60px rgba(15, 23, 42, 0.15);
+}

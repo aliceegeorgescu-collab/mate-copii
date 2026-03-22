@@ -32,6 +32,7 @@ export async function saveRemoteProfileState(playerId, profile) {
       personaj: profile.personaj,
       steleGlobale: profile.steleGlobale,
       sunetActivat: profile.sunetActivat,
+      gamePreferences: profile.gamePreferences,
       lastSessionAt: profile.lastSessionAt,
     },
   });

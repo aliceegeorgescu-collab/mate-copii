@@ -47,6 +47,27 @@ async function ensureScoruriSchema() {
   `);
 }
 
+async function ensureProfileSchema() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS profiluri_copii (
+      id TEXT PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES useri(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      personaj JSONB,
+      stele_globale INTEGER NOT NULL DEFAULT 0 CHECK (stele_globale >= 0),
+      sunet_activat BOOLEAN NOT NULL DEFAULT TRUE,
+      game_preferences JSONB NOT NULL DEFAULT '{}'::jsonb,
+      last_session_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
+
+  await pool.query(`ALTER TABLE profiluri_copii ADD COLUMN IF NOT EXISTS game_preferences JSONB;`);
+  await pool.query(`UPDATE profiluri_copii SET game_preferences = '{}'::jsonb WHERE game_preferences IS NULL;`);
+  await pool.query(`ALTER TABLE profiluri_copii ALTER COLUMN game_preferences SET DEFAULT '{}'::jsonb;`);
+  await pool.query(`ALTER TABLE profiluri_copii ALTER COLUMN game_preferences SET NOT NULL;`);
+}
+
 async function initDb() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS useri (
@@ -59,19 +80,7 @@ async function initDb() {
   `);
 
   await ensureScoruriSchema();
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS profiluri_copii (
-      id TEXT PRIMARY KEY,
-      user_id INTEGER NOT NULL REFERENCES useri(id) ON DELETE CASCADE,
-      name TEXT NOT NULL,
-      personaj JSONB,
-      stele_globale INTEGER NOT NULL DEFAULT 0 CHECK (stele_globale >= 0),
-      sunet_activat BOOLEAN NOT NULL DEFAULT TRUE,
-      last_session_at TIMESTAMPTZ,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-  `);
+  await ensureProfileSchema();
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS rezultate_copii (
@@ -131,5 +140,3 @@ module.exports = {
   pool,
   initDb,
 };
-
-
