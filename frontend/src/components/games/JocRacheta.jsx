@@ -61,7 +61,8 @@ function JocRachetaComponent({
         control={<GameSpeedControl compact value={motion.speedId} onChange={motion.setSpeed} light />}
         instruction="Da click pe numarul corect!"
         light
-        sceneClassName="rocket-layout-scene"
+        sceneClassName="rocket-layout-scene rocket-layout-scene-compact"
+        answerClassName="rocket-answer-shell"
         answerArea={(
           <div className="game-answer-grid rocket-answer-grid">
             {eng.optiuni.map((valoare) => {

@@ -68,7 +68,8 @@ function JocTrenuletComponent({
         progressText={`${Math.max(0, eng.nr - 1)}/${eng.dif.ex}`}
         control={<GameSpeedControl compact value={motion.speedId} onChange={motion.setSpeed} />}
         instruction="Da click pe raspunsul corect!"
-        sceneClassName="train-layout-scene"
+        sceneClassName="train-layout-scene train-layout-scene-compact"
+        answerClassName="train-answer-shell"
         answerArea={(
           <div className="game-answer-grid train-answer-grid">
             {eng.optiuni.map((valoare) => (

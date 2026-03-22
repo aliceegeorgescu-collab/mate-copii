@@ -57,7 +57,8 @@ function JocPescuitComponent({
         progressText={`${Math.max(0, eng.nr - 1)}/${eng.dif.ex}`}
         control={<GameSpeedControl compact value={motion.speedId} onChange={motion.setSpeed} />}
         instruction="Da click pe pestele potrivit!"
-        sceneClassName="fishing-layout-scene"
+        sceneClassName="fishing-layout-scene fishing-layout-scene-compact"
+        answerClassName="fishing-answer-shell"
         answerArea={(
           <div className="game-answer-grid fishing-answer-grid">
             {eng.optiuni.map((valoare) => {

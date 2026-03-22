@@ -2,9 +2,9 @@
         
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         :root { --main-font: 'Fredoka One', cursive; --sec-font: 'Nunito', sans-serif; }
-        body { margin: 0; min-height: 100vh; overflow: hidden; font-family: var(--sec-font); background: #8fd3f4; color: #333; }
+        body { margin: 0; min-height: 100dvh; overflow: hidden; font-family: var(--sec-font); background: #8fd3f4; color: #333; }
         
-        .screen { position: absolute; top:0; left:0; width: 100vw; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .screen { position: absolute; top:0; left:0; width: 100vw; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
         .center-screen { justify-content: center; align-items: center; text-align: center; }
         .z-front { z-index: 10; position: relative; }
         .flex-col-center { display: flex; flex-direction: column; align-items: center; }
@@ -245,7 +245,7 @@
         
         @keyframes fallDown { 0% { transform: translateY(-30vh) rotate(0); } 100% { transform: translateY(120vh) rotate(20deg); } }
         @keyframes popGood { 0% { transform: scale(1); } 50% { transform: scale(1.4); opacity: 1; } 100% { transform: scale(0); opacity: 0; } }
-        @keyframes popBad { 0% { transform: scale(1); filter: grayscale(0); } 50% { transform: scale(1.1); filter: grayscale(1); } 100% { transform: scale(1.1) translateY(100vh) rotate(90deg); opacity: 0; } }
+        @keyframes popBad { 0% { transform: scale(1); filter: grayscale(0); } 50% { transform: scale(1.1); filter: grayscale(1); } 100% { transform: scale(1.1) translateY(100dvh) rotate(90deg); opacity: 0; } }
         
         @keyframes slideToCenter { 0% { transform: translateX(-100vw); } 100% { transform: translateX(0); } }
         @keyframes slideToRight { 0% { transform: translateX(0); } 100% { transform: translateX(100vw); } }
@@ -1648,5 +1648,534 @@
 
   .race-answer-grid .btn-train-opt {
     min-height: 108px;
+  }
+}
+.train-layout-scene-compact {
+  width: min(100%, 1020px);
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+  justify-items: center;
+  align-content: stretch;
+}
+
+.train-answer-shell {
+  width: min(100%, 500px);
+}
+
+.train-layout-scene-compact .train-question-card {
+  width: min(100%, 420px);
+  padding: 14px 18px;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.train-layout-scene-compact .train-question-kicker {
+  font-size: 0.9rem;
+}
+
+.train-layout-scene-compact .train-question-text {
+  font-size: clamp(2rem, 4.6vw, 3.2rem);
+  line-height: 1;
+}
+
+.train-layout-scene-compact .train-route-card {
+  width: min(100%, 960px);
+  height: 100%;
+  min-height: 0;
+  max-height: min(32vh, 240px);
+  padding: 18px 20px 34px;
+}
+
+.train-layout-scene-compact .train-route-line {
+  left: 20px;
+  right: 20px;
+  bottom: 58px;
+}
+
+.train-layout-scene-compact .train-route-rail {
+  left: 16px;
+  right: 16px;
+}
+
+.train-layout-scene-compact .train-route-rail.top {
+  bottom: 72px;
+}
+
+.train-layout-scene-compact .train-route-rail.bottom {
+  bottom: 46px;
+}
+
+.train-layout-scene-compact .train-station-row {
+  left: 20px;
+  right: 20px;
+  bottom: 34px;
+}
+
+.train-layout-scene-compact .train-station-stop {
+  gap: 4px;
+}
+
+.train-layout-scene-compact .train-station-dot {
+  width: 18px;
+  height: 18px;
+  border-width: 3px;
+}
+
+.train-layout-scene-compact .train-station-label {
+  font-size: 0.8rem;
+}
+
+.train-layout-scene-compact .train-engine {
+  left: calc(20px + var(--train-progress, 0) * (100% - 40px));
+  bottom: 64px;
+}
+
+.train-layout-scene-compact .train-engine-body {
+  font-size: clamp(3.4rem, 7vw, 4.8rem);
+}
+
+.train-answer-grid .btn-train-opt {
+  min-height: clamp(58px, 9vh, 84px);
+  padding: 10px;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+@media (max-width: 760px) {
+  .train-layout-scene-compact {
+    gap: 10px;
+  }
+
+  .train-layout-scene-compact .train-question-card {
+    width: min(100%, 360px);
+    padding: 12px 14px;
+  }
+
+  .train-layout-scene-compact .train-question-text {
+    font-size: clamp(1.8rem, 7vw, 2.6rem);
+  }
+
+  .train-layout-scene-compact .train-route-card {
+    max-height: min(28vh, 190px);
+    padding: 14px 14px 28px;
+  }
+
+  .train-layout-scene-compact .train-route-line,
+  .train-layout-scene-compact .train-station-row {
+    left: 14px;
+    right: 14px;
+  }
+
+  .train-layout-scene-compact .train-route-rail {
+    left: 10px;
+    right: 10px;
+  }
+
+  .train-layout-scene-compact .train-route-rail.top {
+    bottom: 62px;
+  }
+
+  .train-layout-scene-compact .train-route-rail.bottom {
+    bottom: 40px;
+  }
+
+  .train-layout-scene-compact .train-route-line {
+    bottom: 50px;
+  }
+
+  .train-layout-scene-compact .train-station-row {
+    bottom: 28px;
+  }
+
+  .train-layout-scene-compact .train-engine {
+    left: calc(14px + var(--train-progress, 0) * (100% - 28px));
+    bottom: 56px;
+  }
+
+  .train-layout-scene-compact .train-engine-body {
+    font-size: clamp(2.8rem, 10vw, 4rem);
+  }
+
+  .train-answer-grid .btn-train-opt {
+    min-height: 64px;
+    font-size: clamp(1.25rem, 5vw, 1.7rem);
+  }
+}
+
+@media (max-width: 420px) {
+  .train-layout-scene-compact .train-route-card {
+    max-height: min(24vh, 160px);
+  }
+
+  .train-layout-scene-compact .train-station-label {
+    font-size: 0.72rem;
+  }
+
+  .train-answer-grid .btn-train-opt {
+    min-height: 58px;
+    font-size: 1.15rem;
+  }
+}
+.balloon-layout-scene-compact {
+  width: min(100%, 980px);
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+  justify-items: center;
+  align-content: stretch;
+}
+
+.balloon-answer-shell {
+  width: min(100%, 500px);
+}
+
+.balloon-layout-scene-compact .balloon-question-card {
+  width: min(100%, 460px);
+  padding: 14px 18px;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.balloon-layout-scene-compact .balloon-question-kicker {
+  font-size: 0.9rem;
+}
+
+.balloon-layout-scene-compact .balloon-question-text {
+  font-size: clamp(1.9rem, 4.6vw, 3rem);
+  line-height: 1.05;
+}
+
+.balloon-layout-scene-compact .balloon-playfield {
+  width: min(100%, 920px);
+  height: 100%;
+  min-height: 0;
+  max-height: min(28vh, 220px);
+  border-radius: 28px;
+}
+
+.balloon-layout-scene-compact .balloon-cloud {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.balloon-layout-scene-compact .balloon-star {
+  font-size: 1.2rem;
+}
+
+.balloon-answer-grid .balloon-answer {
+  min-height: clamp(62px, 9vh, 88px);
+  padding: 10px;
+  border-radius: 24px;
+}
+
+.balloon-answer-grid .balloon-answer-bubble {
+  font-size: clamp(2.3rem, 5vw, 3.3rem);
+}
+
+.balloon-answer-grid .balloon-answer-value {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+@media (max-width: 760px) {
+  .balloon-layout-scene-compact {
+    gap: 10px;
+  }
+
+  .balloon-layout-scene-compact .balloon-question-card {
+    width: min(100%, 380px);
+    padding: 12px 14px;
+  }
+
+  .balloon-layout-scene-compact .balloon-question-text {
+    font-size: clamp(1.6rem, 6vw, 2.3rem);
+  }
+
+  .balloon-layout-scene-compact .balloon-playfield {
+    max-height: min(22vh, 160px);
+  }
+
+  .balloon-answer-grid .balloon-answer {
+    min-height: 72px;
+    padding: 8px;
+  }
+
+  .balloon-answer-grid .balloon-answer-bubble {
+    font-size: clamp(1.9rem, 7vw, 2.6rem);
+  }
+
+  .balloon-answer-grid .balloon-answer-value {
+    font-size: clamp(1.15rem, 4.5vw, 1.5rem);
+  }
+}
+
+@media (max-width: 420px) {
+  .balloon-layout-scene-compact .balloon-playfield {
+    max-height: min(18vh, 120px);
+  }
+
+  .balloon-answer-grid .balloon-answer {
+    min-height: 64px;
+  }
+}
+.rocket-layout-scene-compact {
+  width: min(100%, 980px);
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+  justify-items: center;
+  align-content: stretch;
+}
+
+.rocket-answer-shell {
+  width: min(100%, 500px);
+}
+
+.rocket-layout-scene-compact .rocket-question-card {
+  width: min(100%, 440px);
+  padding: 14px 18px;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.rocket-layout-scene-compact .rocket-question-kicker {
+  font-size: 0.9rem;
+}
+
+.rocket-layout-scene-compact .rocket-question-text {
+  font-size: clamp(2rem, 4.8vw, 3rem);
+  line-height: 1.02;
+}
+
+.rocket-layout-scene-compact .rocket-playfield {
+  width: min(100%, 920px);
+  height: 100%;
+  min-height: 0;
+  max-height: min(30vh, 220px);
+  border-radius: 30px;
+}
+
+.rocket-layout-scene-compact .space-star {
+  font-size: 1.25rem;
+}
+
+.rocket-layout-scene-compact .rocket-destination {
+  top: 8px;
+  font-size: clamp(2.8rem, 6vw, 4.2rem);
+}
+
+.rocket-layout-scene-compact .rocket-trail {
+  top: 54px;
+  bottom: 28px;
+  width: 6px;
+}
+
+.rocket-layout-scene-compact .rocket-ship {
+  bottom: 16px;
+  transform: translateX(-50%) translateY(calc(var(--rocket-progress, 0) * -118px));
+}
+
+.rocket-layout-scene-compact .rocket-ship.is-boosting {
+  transform: translateX(-50%) translateY(-138px) scale(1.04);
+}
+
+.rocket-layout-scene-compact .rocket-ship-body {
+  font-size: clamp(3.6rem, 8vw, 4.8rem);
+}
+
+.rocket-layout-scene-compact .rocket-ship-flame {
+  font-size: 1.7rem;
+  bottom: -12px;
+}
+
+.rocket-answer-grid .btn-rocket-opt {
+  min-height: clamp(58px, 9vh, 84px);
+  padding: 10px;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.race-layout-scene-compact {
+  width: min(100%, 980px);
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+  justify-items: center;
+  align-content: stretch;
+}
+
+.race-answer-shell {
+  width: min(100%, 500px);
+}
+
+.race-layout-scene-compact .race-question-card {
+  width: min(100%, 420px);
+  padding: 14px 18px;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.race-layout-scene-compact .race-question-kicker {
+  font-size: 0.9rem;
+}
+
+.race-layout-scene-compact .race-question-text {
+  font-size: clamp(1.55rem, 4vw, 2.2rem);
+  line-height: 1.08;
+}
+
+.race-layout-scene-compact .race-playfield {
+  width: min(100%, 920px);
+  height: 100%;
+  min-height: 0;
+  gap: 10px;
+}
+
+.race-layout-scene-compact .race-status-board {
+  width: min(100%, 560px);
+  padding: 10px 12px;
+  gap: 8px;
+}
+
+.race-layout-scene-compact .race-status-row-mini {
+  grid-template-columns: 44px 1fr auto;
+  gap: 8px;
+  font-size: 0.88rem;
+}
+
+.race-layout-scene-compact .race-track-modern {
+  width: min(100%, 880px);
+  min-height: 100px;
+  max-height: min(24vh, 132px);
+  padding: 10px 14px 12px;
+  border-radius: 26px;
+}
+
+.race-layout-scene-compact .race-finish-flag {
+  top: 8px;
+  right: 12px;
+  font-size: 0.76rem;
+  padding: 4px 8px;
+}
+
+.race-layout-scene-compact .race-lane-modern {
+  height: 34px;
+}
+
+.race-layout-scene-compact .race-lane-modern + .race-lane-modern {
+  margin-top: 12px;
+}
+
+.race-layout-scene-compact .race-car-emoji {
+  font-size: clamp(2.5rem, 6vw, 3.1rem);
+}
+
+.race-layout-scene-compact .race-car-tag {
+  top: -8px;
+  left: 20px;
+  font-size: 0.74rem;
+  padding: 3px 7px;
+}
+
+.race-answer-grid .btn-train-opt {
+  min-height: clamp(58px, 9vh, 84px);
+  padding: 10px;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+@media (max-width: 760px) {
+  .rocket-layout-scene-compact,
+  .race-layout-scene-compact {
+    gap: 10px;
+  }
+
+  .rocket-layout-scene-compact .rocket-question-card,
+  .race-layout-scene-compact .race-question-card {
+    width: min(100%, 360px);
+    padding: 12px 14px;
+  }
+
+  .rocket-layout-scene-compact .rocket-question-text {
+    font-size: clamp(1.7rem, 6vw, 2.4rem);
+  }
+
+  .rocket-layout-scene-compact .rocket-playfield {
+    max-height: min(24vh, 170px);
+  }
+
+  .rocket-layout-scene-compact .rocket-destination {
+    font-size: clamp(2.3rem, 8vw, 3.2rem);
+  }
+
+  .rocket-layout-scene-compact .rocket-trail {
+    top: 42px;
+    bottom: 24px;
+  }
+
+  .rocket-layout-scene-compact .rocket-ship {
+    transform: translateX(-50%) translateY(calc(var(--rocket-progress, 0) * -90px));
+  }
+
+  .rocket-layout-scene-compact .rocket-ship.is-boosting {
+    transform: translateX(-50%) translateY(-108px) scale(1.03);
+  }
+
+  .rocket-layout-scene-compact .rocket-ship-body {
+    font-size: clamp(3rem, 10vw, 4rem);
+  }
+
+  .race-layout-scene-compact .race-question-text {
+    font-size: clamp(1.35rem, 5vw, 1.8rem);
+  }
+
+  .race-layout-scene-compact .race-status-board {
+    width: min(100%, 100%);
+    padding: 8px 10px;
+  }
+
+  .race-layout-scene-compact .race-status-row-mini {
+    grid-template-columns: 38px 1fr auto;
+    font-size: 0.8rem;
+  }
+
+  .race-layout-scene-compact .race-track-modern {
+    max-height: min(20vh, 110px);
+    min-height: 88px;
+    padding: 8px 10px 10px;
+  }
+
+  .race-layout-scene-compact .race-lane-modern {
+    height: 28px;
+  }
+
+  .race-layout-scene-compact .race-car-emoji {
+    font-size: clamp(2rem, 8vw, 2.6rem);
+  }
+
+  .rocket-answer-grid .btn-rocket-opt,
+  .race-answer-grid .btn-train-opt {
+    min-height: 64px;
+    font-size: clamp(1.2rem, 4.8vw, 1.6rem);
+  }
+}
+
+@media (max-width: 420px) {
+  .rocket-layout-scene-compact .rocket-playfield {
+    max-height: min(20vh, 140px);
+  }
+
+  .race-layout-scene-compact .race-track-modern {
+    max-height: min(18vh, 96px);
+  }
+
+  .rocket-answer-grid .btn-rocket-opt,
+  .race-answer-grid .btn-train-opt {
+    min-height: 58px;
+    font-size: 1.1rem;
   }
 }

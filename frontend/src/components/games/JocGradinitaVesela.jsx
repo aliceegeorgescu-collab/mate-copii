@@ -236,16 +236,16 @@ function JocGradinitaVeselaComponent({ dificultate, onBack, peGata, onAwardStars
         progressLabel="Runde"
         instruction={instruction}
         answerArea={answerArea}
-        answerClassName="kind-answer-tray-shell"
-        sceneClassName="kind-scene-shell"
+        answerClassName="kind-answer-tray-shell kind-answer-tray-shell-compact"
+        sceneClassName="kind-scene-shell kind-scene-shell-compact"
       >
-        <div className={`kind-guide-card kind-guide-card-inline ${feedbackKind}`}>
+        <div className={`kind-guide-card kind-guide-card-inline kind-guide-card-inline-compact ${feedbackKind}`}>
           <BearGuide mood={feedbackKind === "correct" ? "dance" : feedbackKind === "wrong" ? "sad" : "idle"} />
           <h3 className="kind-guide-title">Ursuletul te incurajeaza!</h3>
           <p className="kind-guide-message">{feedback || round.message}</p>
         </div>
 
-        <main className="kind-main-card kind-main-card-compact">
+        <main className={`kind-main-card kind-main-card-compact kind-main-card--${round.type}`}>
           {round.type === "culoare" ? (
             <>
               <div className="kind-round-title">{round.target.label}</div>

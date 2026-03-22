@@ -86,7 +86,8 @@ function JocCursaComponent({
         secondaryStat={{ label: "Pozitii", value: `Tu ${positions.player} • Rival ${positions.rival}` }}
         control={<GameSpeedControl compact value={motion.speedId} onChange={motion.setSpeed} />}
         instruction="Da click pe raspuns ca sa accelerezi!"
-        sceneClassName="race-layout-scene"
+        sceneClassName="race-layout-scene race-layout-scene-compact"
+        answerClassName="race-answer-shell"
         answerArea={(
           <div className="game-answer-grid race-answer-grid">
             {eng.optiuni.map((valoare) => {

@@ -737,40 +737,87 @@
 
 .maze-scene-shell {
   width: min(100%, 1080px);
+  height: 100%;
+  min-height: 0;
   display: grid;
-  gap: 16px;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
   justify-items: center;
+  align-content: stretch;
 }
 
 .maze-mission-card {
-  width: min(100%, 520px);
+  width: min(100%, 480px);
   display: grid;
-  gap: 8px;
+  gap: 6px;
   justify-items: center;
-  padding: 18px 22px;
-  border-radius: 28px;
+  padding: 14px 18px;
+  border-radius: 24px;
   background: rgba(255, 255, 255, 0.94);
   border: 4px solid #1a1a2e;
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.22);
   text-align: center;
+  flex-shrink: 0;
 }
 
 .maze-mission-title {
   font-family: var(--main-font);
-  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-size: clamp(1.55rem, 3vw, 2.2rem);
   color: #1e3a8a;
 }
 
 .maze-mission-copy {
   font-family: var(--sec-font);
-  font-size: 1rem;
-  line-height: 1.4;
+  font-size: 0.92rem;
+  line-height: 1.35;
   color: #334155;
 }
 
+.maze-board-wrap,
 .maze-board-wrap-compact {
   width: 100%;
+  min-height: 0;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.maze-board-wrap-compact {
+  align-items: center;
+}
+
+.maze-board {
+  max-width: 100%;
+  max-height: 100%;
+  padding: 8px;
+}
+
+.maze-answer-shell {
+  width: min(100%, 260px);
+}
+
+.maze-control-tray {
+  width: min(100%, 260px);
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+}
+
+.maze-control-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.maze-control {
+  min-width: 0;
+  width: 100%;
+  min-height: 60px;
+  padding: 12px 8px;
+  border-radius: 20px;
+  font-size: 0.95rem;
 }
 
 .kind-scene-shell {
@@ -868,5 +915,383 @@
 
   .kind-main-card-compact {
     min-height: 210px;
+  }
+}
+@media (max-width: 900px) {
+  .maze-mission-card {
+    width: min(100%, 420px);
+    padding: 12px 14px;
+  }
+
+  .maze-mission-copy {
+    font-size: 0.86rem;
+  }
+
+  .maze-control {
+    min-height: 56px;
+    font-size: 0.88rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .maze-scene-shell {
+    gap: 10px;
+  }
+
+  .maze-mission-card {
+    width: min(100%, 340px);
+    padding: 12px;
+  }
+
+  .maze-mission-title {
+    font-size: 1.35rem;
+  }
+
+  .maze-batman-preview {
+    margin: 0.25rem 0;
+    transform: scale(0.82);
+  }
+
+  .maze-control-row {
+    gap: 6px;
+  }
+}
+.kind-scene-shell-compact {
+  width: min(100%, 980px);
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(140px, 220px) minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+  align-content: center;
+}
+
+.kind-guide-card-inline-compact,
+.kind-main-card-compact {
+  min-height: 0;
+  max-height: min(45vh, 340px);
+  overflow: hidden;
+}
+
+.kind-guide-card-inline-compact {
+  padding: 14px 12px;
+  gap: 8px;
+  justify-content: center;
+}
+
+.kind-guide-card-inline-compact .bear-guide {
+  width: min(80px, 18vw);
+  height: min(80px, 18vw);
+  flex-shrink: 0;
+}
+
+.kind-guide-card-inline-compact .kind-guide-title {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.1;
+}
+
+.kind-guide-card-inline-compact .kind-guide-message {
+  font-size: 0.92rem;
+  line-height: 1.25;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.kind-main-card-compact {
+  padding: 14px 16px;
+  gap: 10px;
+  justify-content: center;
+}
+
+.kind-main-card-compact .kind-round-title {
+  font-size: clamp(1.55rem, 3.4vw, 2.4rem);
+  line-height: 1;
+}
+
+.kind-main-card--culoare .kind-color-target {
+  width: min(100%, 170px);
+  height: min(19vh, 120px);
+  min-height: 72px;
+  max-height: 120px;
+  border-width: 6px;
+}
+
+.kind-main-card--animale .kind-animals-stage,
+.kind-main-card--forma .kind-shape-target {
+  width: min(100%, 420px);
+  min-height: min(22vh, 150px);
+  max-height: min(22vh, 150px);
+  padding: 0.8rem;
+}
+
+.kind-main-card--forma .kind-shape-target svg {
+  width: min(110px, 22vw);
+  height: min(110px, 22vw);
+}
+
+.kind-main-card--animale .kind-animal {
+  font-size: clamp(2.2rem, 6vw, 3rem);
+}
+
+.kind-answer-tray-shell-compact {
+  width: min(100%, 920px);
+}
+
+.kind-answer-tray-shell-compact .kind-answer-tray-grid {
+  width: 100%;
+}
+
+.kind-answer-tray-shell-compact .kind-answer-tray-grid.kind-color-options,
+.kind-answer-tray-shell-compact .kind-answer-tray-grid.kind-number-options {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.kind-answer-tray-shell-compact .kind-answer-tray-grid.kind-shape-options {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.kind-answer-tray-shell-compact .kind-option-button {
+  min-height: 60px;
+  height: clamp(60px, 9vh, 72px);
+  padding: 10px;
+  border-radius: 20px;
+  font-size: clamp(1rem, 2.4vw, 1.2rem);
+  box-shadow: 0 8px 0 rgba(148, 163, 184, 0.45);
+}
+
+.kind-answer-tray-shell-compact .kind-option-button.number {
+  font-size: clamp(1.35rem, 4vw, 1.8rem);
+}
+
+.kind-answer-tray-shell-compact .kind-option-button.shape {
+  min-height: 72px;
+}
+
+.kind-answer-tray-shell-compact .kind-option-button.shape svg {
+  width: min(68px, 16vw);
+  height: min(68px, 16vw);
+}
+
+@media (max-width: 900px) {
+  .kind-scene-shell-compact {
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .kind-guide-card-inline-compact,
+  .kind-main-card-compact {
+    max-height: min(42vh, 300px);
+  }
+
+  .kind-guide-card-inline-compact .kind-guide-message {
+    font-size: 0.88rem;
+    -webkit-line-clamp: 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .kind-scene-shell-compact {
+    grid-template-columns: 108px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .kind-guide-card-inline-compact {
+    padding: 10px 8px;
+  }
+
+  .kind-guide-card-inline-compact .bear-guide {
+    width: 68px;
+    height: 68px;
+  }
+
+  .kind-guide-card-inline-compact .kind-guide-title {
+    font-size: 0.92rem;
+  }
+
+  .kind-guide-card-inline-compact .kind-guide-message {
+    font-size: 0.8rem;
+  }
+
+  .kind-main-card-compact {
+    padding: 12px 12px;
+    gap: 8px;
+    max-height: min(40vh, 260px);
+  }
+
+  .kind-main-card-compact .kind-round-title {
+    font-size: clamp(1.2rem, 6vw, 1.6rem);
+  }
+
+  .kind-main-card--culoare .kind-color-target {
+    width: min(100%, 120px);
+    height: min(15vh, 88px);
+    min-height: 64px;
+    max-height: 88px;
+  }
+
+  .kind-main-card--animale .kind-animals-stage,
+  .kind-main-card--forma .kind-shape-target {
+    min-height: min(17vh, 96px);
+    max-height: min(17vh, 96px);
+    padding: 0.5rem;
+  }
+
+  .kind-main-card--animale .kind-animal {
+    font-size: clamp(1.6rem, 8vw, 2.2rem);
+  }
+
+  .kind-main-card--forma .kind-shape-target svg {
+    width: min(82px, 24vw);
+    height: min(82px, 24vw);
+  }
+
+  .kind-answer-tray-shell-compact .kind-answer-tray-grid.kind-color-options,
+  .kind-answer-tray-shell-compact .kind-answer-tray-grid.kind-number-options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .kind-answer-tray-shell-compact .kind-answer-tray-grid.kind-shape-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .kind-answer-tray-shell-compact .kind-option-button {
+    min-height: 56px;
+    height: clamp(56px, 8vh, 64px);
+    font-size: 0.95rem;
+    padding: 8px;
+  }
+
+  .kind-answer-tray-shell-compact .kind-option-button.number {
+    font-size: 1.2rem;
+  }
+
+  .kind-answer-tray-shell-compact .kind-option-button.shape {
+    min-height: 64px;
+  }
+}
+.fishing-layout-scene-compact {
+  width: min(100%, 980px);
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+  justify-items: center;
+  align-content: stretch;
+}
+
+.fishing-answer-shell {
+  width: min(100%, 500px);
+}
+
+.fishing-layout-scene-compact .fishing-question-card {
+  width: min(100%, 460px);
+  padding: 14px 18px;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.fishing-layout-scene-compact .fishing-question-kicker {
+  font-size: 0.9rem;
+}
+
+.fishing-layout-scene-compact .fishing-question-text {
+  font-size: clamp(1.9rem, 4.4vw, 2.9rem);
+  line-height: 1.05;
+}
+
+.fishing-layout-scene-compact .fishing-playfield {
+  width: min(100%, 920px);
+  height: 100%;
+  min-height: 0;
+  max-height: min(28vh, 220px);
+  border-radius: 28px;
+}
+
+.fishing-layout-scene-compact .fishing-boat {
+  font-size: clamp(2.6rem, 6vw, 3.8rem);
+}
+
+.fishing-layout-scene-compact .fishing-ripple {
+  height: 20px;
+}
+
+.fishing-layout-scene-compact .fishing-ripple.ripple-a { width: 160px; }
+.fishing-layout-scene-compact .fishing-ripple.ripple-b { width: 210px; }
+.fishing-layout-scene-compact .fishing-ripple.ripple-c { width: 260px; }
+
+.fishing-layout-scene-compact .fishing-bubble {
+  font-size: 1.1rem;
+}
+
+.fishing-layout-scene-compact .fishing-deco {
+  font-size: 1.6rem;
+}
+
+.fishing-answer-grid .fishing-answer {
+  min-height: clamp(62px, 9vh, 88px);
+  padding: 10px;
+  border-radius: 24px;
+}
+
+.fishing-answer-grid .fishing-answer-fish {
+  font-size: clamp(2.2rem, 5vw, 3.1rem);
+}
+
+.fishing-answer-grid .fishing-answer-value {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+@media (max-width: 760px) {
+  .fishing-layout-scene-compact {
+    gap: 10px;
+  }
+
+  .fishing-layout-scene-compact .fishing-question-card {
+    width: min(100%, 380px);
+    padding: 12px 14px;
+  }
+
+  .fishing-layout-scene-compact .fishing-question-text {
+    font-size: clamp(1.6rem, 6vw, 2.3rem);
+  }
+
+  .fishing-layout-scene-compact .fishing-playfield {
+    max-height: min(22vh, 160px);
+  }
+
+  .fishing-layout-scene-compact .fishing-boat {
+    font-size: clamp(2.2rem, 8vw, 3rem);
+  }
+
+  .fishing-answer-grid .fishing-answer {
+    min-height: 72px;
+    padding: 8px;
+  }
+
+  .fishing-answer-grid .fishing-answer-fish {
+    font-size: clamp(1.8rem, 7vw, 2.5rem);
+  }
+
+  .fishing-answer-grid .fishing-answer-value {
+    font-size: clamp(1.15rem, 4.4vw, 1.5rem);
+  }
+}
+
+@media (max-width: 420px) {
+  .fishing-layout-scene-compact .fishing-playfield {
+    max-height: min(18vh, 120px);
+  }
+
+  .fishing-answer-grid .fishing-answer {
+    min-height: 64px;
   }
 }

@@ -2,6 +2,7 @@ import { memo } from "react";
 import GameHeaderCompact from "./GameHeaderCompact";
 import GameAnswerTray from "./GameAnswerTray";
 import GameInstructionCard from "./GameInstructionCard";
+import GameScreen from "./GameScreen";
 import ProgressBar from "./ProgressBar";
 
 function GameLayoutComponent({
@@ -30,20 +31,23 @@ function GameLayoutComponent({
   const resolvedProgressText = progressText ?? `${resolvedProgressValue}/${resolvedProgressMax}`;
 
   return (
-    <div className={`game-layout ${light ? "is-light" : ""} ${className}`.trim()}>
-      <GameHeaderCompact
-        onBack={onBack}
-        timp={timp}
-        nr={nr}
-        total={total}
-        scor={scor}
-        scoreLabel={scoreLabel}
-        secondaryStat={secondaryStat}
-        control={control}
-        light={light}
-      />
-
-      <div className="game-layout-progress">
+    <GameScreen
+      className={`game-layout ${className}`.trim()}
+      light={light}
+      header={(
+        <GameHeaderCompact
+          onBack={onBack}
+          timp={timp}
+          nr={nr}
+          total={total}
+          scor={scor}
+          scoreLabel={scoreLabel}
+          secondaryStat={secondaryStat}
+          control={control}
+          light={light}
+        />
+      )}
+      progress={(
         <ProgressBar
           value={resolvedProgressValue}
           max={resolvedProgressMax}
@@ -52,15 +56,12 @@ function GameLayoutComponent({
           compact
           tone={light ? "sky" : "sun"}
         />
-      </div>
-
-      <GameInstructionCard text={instruction} light={light} />
-
-      <div className="game-layout-body">
-        <div className={`game-layout-scene ${sceneClassName}`.trim()}>{children}</div>
-        {answerArea ? <GameAnswerTray className={`game-layout-answer ${answerClassName}`.trim()}>{answerArea}</GameAnswerTray> : null}
-      </div>
-    </div>
+      )}
+      instruction={<GameInstructionCard text={instruction} light={light} />}
+      answers={answerArea ? <GameAnswerTray className={`game-layout-answer ${answerClassName}`.trim()}>{answerArea}</GameAnswerTray> : null}
+    >
+      <div className={`game-layout-scene ${sceneClassName}`.trim()}>{children}</div>
+    </GameScreen>
   );
 }
 

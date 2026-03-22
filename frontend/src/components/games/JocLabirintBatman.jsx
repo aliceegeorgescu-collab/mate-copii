@@ -79,6 +79,7 @@ function MazeResultScreen({ rezultat, onBack, onAwardStars, onRecordResult }) {
 function JocLabirintBatmanComponent({ dificultate, onBack, peGata, onAwardStars, onRecordResult }) {
   const settings = useMemo(() => MAZE_SETTINGS[dificultate] || MAZE_SETTINGS.mediu, [dificultate]);
   const settingsKey = `${dificultate}-${settings.size}-${settings.time}-${settings.penaltyWalls}`;
+  const totalCells = settings.size * settings.size;
   const [maze, setMaze] = useState(() => buildMaze(settings.size, settings.penaltyWalls));
   const [position, setPosition] = useState({ row: 0, col: 0 });
   const [visited, setVisited] = useState(() => new Set([coordsKey(0, 0)]));
@@ -87,9 +88,31 @@ function JocLabirintBatmanComponent({ dificultate, onBack, peGata, onAwardStars,
   const [shake, setShake] = useState(false);
   const [grimace, setGrimace] = useState(false);
   const [rezultat, setRezultat] = useState(null);
+  const [viewport, setViewport] = useState(() => ({
+    width: typeof window !== "undefined" ? window.innerWidth : 1440,
+    height: typeof window !== "undefined" ? Math.round(window.visualViewport?.height ?? window.innerHeight) : 900,
+  }));
   const lockRef = useRef(false);
   const pasiRef = useRef(0);
   const lovituriRef = useRef(0);
+
+  useEffect(() => {
+    function updateViewport() {
+      setViewport({
+        width: window.innerWidth,
+        height: Math.round(window.visualViewport?.height ?? window.innerHeight),
+      });
+    }
+
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+    window.visualViewport?.addEventListener("resize", updateViewport);
+
+    return () => {
+      window.removeEventListener("resize", updateViewport);
+      window.visualViewport?.removeEventListener("resize", updateViewport);
+    };
+  }, []);
 
   useEffect(() => {
     pasiRef.current = pasi;
@@ -214,12 +237,31 @@ function JocLabirintBatmanComponent({ dificultate, onBack, peGata, onAwardStars,
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [moveBatman, rezultat]);
 
+  const cellSize = useMemo(() => {
+    const safeWidth = Math.max(320, viewport.width);
+    const safeHeight = Math.max(520, viewport.height);
+    const availableHeight = Math.max(220, safeHeight - (safeWidth <= 640 ? 320 : safeWidth <= 1024 ? 300 : 270));
+    const availableWidth = Math.max(240, Math.min(safeWidth - (safeWidth <= 640 ? 28 : 40), 1080));
+    const heightBound = (availableHeight * 0.45) / settings.size;
+    const widthBound = (availableWidth * (safeWidth <= 640 ? 0.82 : 0.7)) / settings.size;
+    const rawSize = Math.floor(Math.min(heightBound, widthBound));
+    const minCell = settings.size >= 9 ? 22 : settings.size === 7 ? 28 : 34;
+    const maxCell = settings.size === 5 ? 56 : settings.size === 7 ? 46 : 38;
+
+    return Math.max(minCell, Math.min(maxCell, rawSize));
+  }, [settings.size, viewport.height, viewport.width]);
+
+  const boardStyle = useMemo(() => ({
+    gridTemplateColumns: `repeat(${settings.size}, ${cellSize}px)`,
+    gridTemplateRows: `repeat(${settings.size}, ${cellSize}px)`,
+  }), [cellSize, settings.size]);
+
+  const tokenSize = Math.max(38, cellSize - 6);
+  const currentScore = timp * 10 + (lovituri === 0 ? 50 : 0);
+
   if (rezultat) {
     return <MazeResultScreen rezultat={rezultat} onBack={peGata} onAwardStars={onAwardStars} onRecordResult={onRecordResult} />;
   }
-
-  const cellSize = settings.size === 9 ? 36 : settings.size === 7 ? 46 : 58;
-  const currentScore = timp * 10 + (lovituri === 0 ? 50 : 0);
 
   return (
     <div className={`screen z-front maze-screen screen-enter ${shake ? "shake-scr" : ""}`}>
@@ -231,13 +273,14 @@ function JocLabirintBatmanComponent({ dificultate, onBack, peGata, onAwardStars,
         scor={currentScore}
         scoreLabel="Scor"
         progressValue={visited.size}
-        progressMax={settings.size * settings.size}
+        progressMax={totalCells}
         progressLabel="Parcurs"
-        progressText={`${visited.size}/${settings.size * settings.size}`}
+        progressText={`${visited.size}/${totalCells}`}
         secondaryStat={{ label: "Pasi", value: pasi }}
         instruction="Foloseste sagetile sau butoanele ca sa ajungi la steag!"
         light
         sceneClassName="maze-scene-shell"
+        answerClassName="maze-answer-shell"
         answerArea={(
           <div className="maze-control-tray">
             <button className="maze-control" onClick={() => moveBatman("sus")}>Sus</button>
@@ -253,12 +296,12 @@ function JocLabirintBatmanComponent({ dificultate, onBack, peGata, onAwardStars,
           <div className="maze-mission-title">Labirintul lui Batman</div>
           <div className="maze-mission-copy">Ajuta-l pe Batman sa ajunga la Gotham City. Bonusul ramane daca nu lovesti peretii.</div>
           <div className={`maze-batman-preview ${grimace ? "grimace" : ""}`}>
-            <CharacterArt personaj={BATMAN} stare={grimace ? "gresit" : "idle"} size={132} />
+            <CharacterArt personaj={BATMAN} stare={grimace ? "gresit" : "idle"} size={108} />
           </div>
         </div>
 
         <div className="maze-board-wrap maze-board-wrap-compact">
-          <div className="maze-board" style={{ gridTemplateColumns: `repeat(${settings.size}, ${cellSize}px)`, gridTemplateRows: `repeat(${settings.size}, ${cellSize}px)` }}>
+          <div className="maze-board" style={boardStyle}>
             {maze.map((row, rowIndex) =>
               row.map((cell, colIndex) => {
                 const isVisited = visited.has(coordsKey(rowIndex, colIndex));
@@ -280,10 +323,10 @@ function JocLabirintBatmanComponent({ dificultate, onBack, peGata, onAwardStars,
                     }}
                   >
                     {isStart ? <span className="maze-start-dot" /> : null}
-                    {isGoal ? <span className="maze-flag">{"🏁"}</span> : null}
+                    {isGoal ? <span className="maze-flag">{"\uD83C\uDFC1"}</span> : null}
                     {isBatman ? (
                       <div className="maze-batman-token">
-                        <CharacterArt personaj={BATMAN} stare={grimace ? "gresit" : "idle"} size={Math.max(54, cellSize - 4)} />
+                        <CharacterArt personaj={BATMAN} stare={grimace ? "gresit" : "idle"} size={tokenSize} />
                       </div>
                     ) : null}
                   </div>

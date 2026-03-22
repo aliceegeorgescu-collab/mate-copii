@@ -58,7 +58,8 @@ function JocBaloaneComponent({
         progressText={`${Math.max(0, eng.nr - 1)}/${eng.dif.ex}`}
         control={<GameSpeedControl compact value={motion.speedId} onChange={motion.setSpeed} />}
         instruction="Da click pe balonul corect!"
-        sceneClassName="balloon-layout-scene"
+        sceneClassName="balloon-layout-scene balloon-layout-scene-compact"
+        answerClassName="balloon-answer-shell"
         answerArea={(
           <div className="game-answer-grid balloon-answer-grid">
             {eng.optiuni.map((valoare, index) => {
